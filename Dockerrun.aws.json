@@ -1,7 +1,7 @@
 {
 "AWSEBDockerrunVersion":"1",
 "Image":{
-"Name: "thanksfordemo/springbootapp",,
+"Name: "thanksfordemo/springbootapp",
 "Update":"true"
 },
 "Ports":[{"ContainerPort":"8080"}],
