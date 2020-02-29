@@ -19,15 +19,19 @@ c.	After starting zookeeper we have to start mesos-master and mesos-slave, it ca
 Download and install marathon 
 
 a.	Download Marathon using:
+
      curl -O http://downloads.mesosphere.com/marathon/v1.3.1/marathon-1.3.6.tgz
 
 b.	Untar it using: 
+
      tar xzf marathon-1.3.1.tgz
 
 c.	Go into the marathon folder using:
+
      cd marathon-1.3.1
 
 d.	Start Apache zookeeper, and Apache Mesos and to start marathon run this command:
+
      ./bin/start –master 127.0.0.1:5050 –-zk zk://localhost:2181/marathon --http_port=7070
 
 
