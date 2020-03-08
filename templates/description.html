@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<meta charset="UTF-8">
+<title>Search</title>
+<style type = "text/css">
+* {
+  box-sizing: border-box;
+}
+
+#location {
+  background-image: url('images/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li a {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+
+#myUL li a:hover:not(.header) {
+  background-color: #eee;
+}
+
+</style>
+
+</head>
+<body onload="getLocationDetails()">
+    
+    <ul id="myUL">
+    </ul>
+
+</body>
+<script>
+    function getLocationDetails(){
+
+        var vars = {};
+        var ul = document.getElementById("myUL");
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+        id = vars["id"]
+        $.get("http://localhost:5050/description/"+id).done(function (data) {
+            var detailedData = JSON.parse(data)
+
+            var place_city = detailedData.place+", "+detailedData.city
+            var node = document.createElement("lI");
+            var textNode = document.createTextNode(place_city);
+            node.appendChild(textNode);
+            ul.appendChild(node);
+
+
+            var node = document.createElement("lI");
+            var textNode = document.createTextNode(detailedData.description);
+            node.appendChild(textNode);
+            ul.appendChild(node);
+          
+
+        });
+
+    });
+    }
+</script>
+<input type="button" value="Proceed to book tickets"/>
+
+</html>

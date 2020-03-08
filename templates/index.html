@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<meta charset="UTF-8">
+<title>Search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+#location {
+  background-image: url('images/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li a {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+
+#myUL li a:hover:not(.header) {
+  background-color: #eee;
+}
+</style>
+</head>
+<body>
+
+<h2>Tourism</h2>
+
+<input type="text" id="location" onkeyup="fetchLocation()" placeholder="Search for names.." title="Type in a name">
+
+<ul id="myUL">
+</ul>
+
+<script>
+function fetchLocation() {
+    removAllLi();
+    var ul = document.getElementById("myUL");
+    var x = document.getElementById("location");
+    if(x.value!=''){
+      $.get("http://localhost:5000/search/"+x.value).done(function (data) {
+        var jsonData = JSON.parse(data);
+        var local_list = []
+        for (var i = 0; i < jsonData.length; i++)
+          {
+              var ele = jsonData[i];
+              local_list.push(ele);
+          }
+          for (var i = 0; i < local_list.length; i++){
+            var node = document.createElement("lI");                 // Create a <li> node
+            var anchorNode = document.createElement('a');         // Create a text node
+            var id = String(local_list[i]).split("--__--")[1];
+            var textNode = document.createTextNode(String(local_list[i]).split("--__--")[0]);
+            anchorNode.href = "description.html?id="+id
+            anchorNode.appendChild(textNode);
+            node.appendChild(anchorNode);       
+            ul.appendChild(node);     // Append <li> to <ul> with id="myList"
+          }
+      });
+      
+    }
+}
+function removAllLi(){
+  console.log("removed")
+  document.getElementById("myUL").innerHTML = "";
+}
+</script>
+
+<input type="button" value="Proceed to book tickets"/>
+</body>
+</html>
