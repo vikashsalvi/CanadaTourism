@@ -3,6 +3,7 @@ package com.cc.cloud5409tourismapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     private AutoCompleteTextViewAdapter autoCompleteTextViewAdapter;
     // Search Microservice
-    String url = "http://192.168.0.49:5000/search/";
+    String url = "http://134.190.132.186:5000/search/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
+
     private void FetchSearchResults(String query) {
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url + query, null, new Response.Listener<JSONArray>() {
             @Override
@@ -134,6 +138,9 @@ public class MainActivity extends AppCompatActivity {
         });
         RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrayRequest);
     }
+
+
+
 
 
 }

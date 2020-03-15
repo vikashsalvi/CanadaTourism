@@ -2,6 +2,7 @@ package com.cc.cloud5409tourismapp.LandmarkInfo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.cc.cloud5409tourismapp.MainActivity;
 import com.cc.cloud5409tourismapp.R;
 import com.cc.cloud5409tourismapp.RequestQueueApiSingleton;
 import com.cc.cloud5409tourismapp.TicketBooking.TicketBookingActivity;
@@ -34,7 +36,7 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     TextView name;
     TextView description;
     // Description Microservice
-    String url = "http://192.168.0.53:5050/description/";
+    String url = "http://134.190.132.186:5050/description/";
     private static final String TAG = "Cloud5409AuthCognito";
 
     @Override
@@ -73,6 +75,7 @@ public class LandmarkInfoActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     try {
+
                                         name.setText(response.get("name").toString());
                                         description.setText(response.get("description").toString());
                                     } catch (JSONException e) {
@@ -107,6 +110,14 @@ public class LandmarkInfoActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("back_to_main_screen", true);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
+
     void initCognitoAuth() {
         Auth.Builder builder = new Auth.Builder().setAppClientId(getString(R.string.cognito_client_id))
                 .setAppClientSecret(getString(R.string.cognito_client_secret))
@@ -118,6 +129,8 @@ public class LandmarkInfoActivity extends AppCompatActivity {
         this.auth = builder.build();
         reDirectAWS = Uri.parse(getString(R.string.app_redirect));
     }
+
+
 
     class callback implements AuthHandler {
 

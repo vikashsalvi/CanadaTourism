@@ -21,12 +21,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="184dp"
+        android:layout_marginBottom="513dp"
         android:text="@string/main_app_name"
         android:textSize="25sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
@@ -34,26 +36,30 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="124dp"
         android:layout_marginTop="48dp"
+        android:layout_marginBottom="437dp"
         android:text="@string/search_places"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <AutoCompleteTextView
         android:id="@+id/search_auto_complete_textView"
-        android:layout_width="238dp"
-        android:layout_height="51dp"
+        android:layout_width="332dp"
+        android:layout_height="49dp"
         android:layout_marginStart="72dp"
         android:layout_marginTop="44dp"
+        android:layout_marginBottom="344dp"
         android:hint="@string/search_any_text"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="48dp"
-        android:layout_height="43dp"
+        android:layout_width="47dp"
+        android:layout_height="39dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="348dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -61,17 +67,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/search" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="344dp"
-        android:background="@drawable/button_background_2"
-        android:text="@string/submit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/search_auto_complete_textView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
