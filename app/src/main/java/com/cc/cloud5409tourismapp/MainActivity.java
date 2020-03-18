@@ -1,30 +1,32 @@
 package com.cc.cloud5409tourismapp;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+
 import android.os.Handler;
 import android.os.Message;
+
 import android.text.Editable;
 import android.text.TextUtils;
+
 import android.text.TextWatcher;
 import android.view.View;
+
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-
+import android.widget.ImageButton;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.cc.cloud5409tourismapp.LandmarkInfo.LandmarkInfoActivity;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +38,21 @@ public class MainActivity extends AppCompatActivity {
     public static final long AUTO_COMPLETE_DELAY = 300;
     private Handler handler;
     private AutoCompleteTextViewAdapter autoCompleteTextViewAdapter;
+    private ImageButton cancel_button;
+
     // Search Microservice
-    String url = "http://134.190.132.186:5000/search/";
+    String url = "http://192.168.0.51:5000/search/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        cancel_button = findViewById(R.id.cancel_button);
+        cancel_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                autoCompleteTextView.setText("");
+            }
+        });
         autoCompleteTextView = findViewById(R.id.search_auto_complete_textView);
         autoCompleteTextViewAdapter = new AutoCompleteTextViewAdapter(this,
                 android.R.layout.simple_dropdown_item_1line);
@@ -88,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override

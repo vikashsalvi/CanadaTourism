@@ -19,6 +19,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
 import com.cc.cloud5409tourismapp.MainActivity;
 import com.cc.cloud5409tourismapp.R;
 import com.cc.cloud5409tourismapp.RequestQueueApiSingleton;
@@ -36,7 +37,9 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     TextView name;
     TextView description;
     // Description Microservice
-    String url = "http://134.190.132.186:5050/description/";
+    String url = "http://192.168.0.51:5050/description/";
+    // URL for Amazon S3 Bucket
+    String s3bucketUrl = "https://cloud-5409-tourism-app-resources.s3.amazonaws.com/";
     private static final String TAG = "Cloud5409AuthCognito";
 
     @Override
@@ -65,19 +68,21 @@ public class LandmarkInfoActivity extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                String place_id = getIntent().getStringExtra("place_id");
-                System.out.println(url + place_id);
+                final String place_id = getIntent().getStringExtra("place_id");
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + place_id, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(final JSONObject response) {
+                        System.out.println("Successful Response: " + response);
                         synchronized (this) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
-
+                                        System.out.println(url + place_id);
                                         name.setText(response.get("name").toString());
                                         description.setText(response.get("description").toString());
+                                        String imageQuery = response.get("name").toString().split(" ")[0] + ".jpeg";
+                                        Glide.with(getApplicationContext()).load(s3bucketUrl + imageQuery).into(location_image);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
@@ -88,7 +93,8 @@ public class LandmarkInfoActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println(error);
+
+                        System.out.println("No Response from Description: "+ error);
                     }
                 });
 
@@ -140,13 +146,14 @@ public class LandmarkInfoActivity extends AppCompatActivity {
             Bundle b = new Bundle();
             b.putString("app_access_token", authUserSession.getAccessToken().getJWTToken());
             b.putString("app_id_token", authUserSession.getIdToken().getJWTToken());
+            b.putString("user_name", authUserSession.getUsername());
             intent.putExtras(b);
             startActivity(intent);
         }
 
         @Override
         public void onSignout() {
-
+            startActivity(getIntent());
         }
 
         @Override
