@@ -27,6 +27,7 @@ import com.cc.cloud5409tourismapp.TicketBooking.TicketBookingActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class LandmarkInfoActivity extends AppCompatActivity {
 
@@ -37,7 +38,7 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     TextView name;
     TextView description;
     // Description Microservice
-    String url = "http://192.168.0.51:5050/description/";
+    String url = "http://192.168.0.60:5050/description/";
     // URL for Amazon S3 Bucket
     String s3bucketUrl = "https://cloud-5409-tourism-app-resources.s3.amazonaws.com/";
     private static final String TAG = "Cloud5409AuthCognito";
@@ -64,11 +65,11 @@ public class LandmarkInfoActivity extends AppCompatActivity {
             this.auth.signOut();
         }
 
-
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 final String place_id = getIntent().getStringExtra("place_id");
+                System.out.println(place_id);
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + place_id, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(final JSONObject response) {
@@ -79,9 +80,11 @@ public class LandmarkInfoActivity extends AppCompatActivity {
                                 public void run() {
                                     try {
                                         System.out.println(url + place_id);
-                                        name.setText(response.get("name").toString());
+                                        String place = response.get("name").toString() + "," + response.get("city").toString();
+                                        name.setText(place);
                                         description.setText(response.get("description").toString());
                                         String imageQuery = response.get("name").toString().split(" ")[0] + ".jpeg";
+                                        System.out.println(imageQuery);
                                         Glide.with(getApplicationContext()).load(s3bucketUrl + imageQuery).into(location_image);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -93,7 +96,6 @@ public class LandmarkInfoActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
                         System.out.println("No Response from Description: "+ error);
                     }
                 });
@@ -159,6 +161,9 @@ public class LandmarkInfoActivity extends AppCompatActivity {
         @Override
         public void onFailure(Exception e) {
             Log.e(TAG, "Failed to auth", e);
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
         }
     }
 

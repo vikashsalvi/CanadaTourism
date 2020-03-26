@@ -5,29 +5,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.os.Handler;
 import android.os.Message;
-
 import android.text.Editable;
 import android.text.TextUtils;
-
 import android.text.TextWatcher;
 import android.view.View;
-
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.cc.cloud5409tourismapp.LandmarkInfo.LandmarkInfoActivity;
-
 import org.json.JSONArray;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
     private Handler handler;
     private AutoCompleteTextViewAdapter autoCompleteTextViewAdapter;
     private ImageButton cancel_button;
+    ArrayList<HashMap<String,String>> searchPlacelist;
 
     // Search Microservice
-    String url = "http://192.168.0.51:5000/search/";
+    String url = "http://192.168.0.60:5000/search/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,29 +58,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // Passing data to Landmark info activity
-                String[] word = autoCompleteTextViewAdapter.getObject(i).split(",");
-                JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url + word[0], null, new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            for(int i=0; i< response.length();i++){
-                                String[] info = response.getString(i).split("--__--");
-                                String id = info[1];
-                                Intent intent = new Intent(getApplicationContext(), LandmarkInfoActivity.class);
-                                intent.putExtra("place_id", id);
-                                startActivity(intent);
-                            }
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println(error);
-                    }
-                });
-                RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrayRequest);
+                String id = autoCompleteTextViewAdapter.getObject(i).get("id");
+                String location = autoCompleteTextViewAdapter.getObject(i).get("location");
+                Intent intent = new Intent(getApplicationContext(), LandmarkInfoActivity.class);
+                intent.putExtra("place_id", id);
+                intent.putExtra("location", location);
+                startActivity(intent);
             }
         });
 
@@ -127,16 +106,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONArray response) {
                 List<String> places = new ArrayList<>();
+                searchPlacelist = new ArrayList<HashMap<String, String>>();
                 try {
                     for(int i=0; i< response.length();i++){
                         String[] info = response.getString(i).split("--__--");
                         String location = info[0];
+                        String id = info[1];
+                        HashMap<String,String> searchList = new HashMap<String, String>();
+                        searchList.put("location", location);
+                        searchList.put("id", id);
+                        searchPlacelist.add(searchList);
                         places.add(location);
                     }
                 } catch (Exception e){
                     e.printStackTrace();
                 }
-                autoCompleteTextViewAdapter.setData(places);
+                autoCompleteTextViewAdapter.setData(searchPlacelist);
                 autoCompleteTextViewAdapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {

@@ -9,38 +9,41 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AutoCompleteTextViewAdapter extends ArrayAdapter<String> implements Filterable {
 
     private List<String> searchListData;
+    ArrayList<HashMap<String,String>> autoCompleteList;
 
     public AutoCompleteTextViewAdapter(@NonNull Context context, int resource) {
         super(context, resource);
         searchListData = new ArrayList<>();
+        autoCompleteList = new ArrayList<>();
 
     }
 
-    public void setData(List<String> slist){
-        searchListData.clear();
-        searchListData.addAll(slist);
+    public void setData(ArrayList<HashMap<String,String>> slist){
+        autoCompleteList.clear();
+        autoCompleteList.addAll(slist);
     }
 
 
     @Override
     public int getCount() {
-        return searchListData.size();
+        return autoCompleteList.size();
     }
 
     @Nullable
     @Override
     public String getItem(int position){
-        return searchListData.get(position);
+        return autoCompleteList.get(position).get("location");
     }
 
 
-    public String getObject(int position){
-        return searchListData.get(position);
+    public HashMap<String, String> getObject(int position){
+        return autoCompleteList.get(position);
     }
 
     @NonNull
@@ -51,8 +54,8 @@ public class AutoCompleteTextViewAdapter extends ArrayAdapter<String> implements
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
-                    filterResults.values = searchListData;
-                    filterResults.count = searchListData.size();
+                    filterResults.values = autoCompleteList;
+                    filterResults.count = autoCompleteList.size();
                 }
                 return filterResults;
             }
