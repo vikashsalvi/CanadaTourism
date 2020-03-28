@@ -6,7 +6,7 @@
     <string name="cognito_client_secret">4kjqpo02ubb41mmfgfotlp3hdfmu6icfec3ee0cu62nlhbfd9ve</string>
     <string name="app_redirect">myapp://www.loginactivity.com/landmarkinfoactivity</string>
     <string name="proceed_to_booking">Proceed To Booking</string>
-    <string name="sign_out">Sign Out</string>
+    <string name="sign_out">Sign out</string>
     <string name="main_app_name">Cloud 5409 Tourism Application</string>
     <string name="search_places">Search for Places</string>
     <string name="search_any_text">Search by any keyword</string>

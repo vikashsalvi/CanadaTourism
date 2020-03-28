@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import com.amazonaws.mobileconnectors.cognitoauth.Auth;
 import com.cc.cloud5409tourismapp.LandmarkInfo.LandmarkInfoActivity;
+import com.cc.cloud5409tourismapp.MainActivity;
 import com.cc.cloud5409tourismapp.R;
 
 public class TicketBookingActivity extends AppCompatActivity {
@@ -29,15 +32,23 @@ public class TicketBookingActivity extends AppCompatActivity {
         System.out.println("ACCESS_TOKEN: " + access_token);
         System.out.println("APP_ID_TOKEN: " + app_id_token);
         System.out.println("USER_NAME " + user_name);
+    }
 
-        signOutButton = findViewById(R.id.sign_out);
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), LandmarkInfoActivity.class);
-                intent.putExtra("sign_out_message", "SignOut");
-                startActivity(intent);
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.app_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.menu_sign_out) {
+            Intent intent = new Intent(getApplicationContext(), LandmarkInfoActivity.class);
+            intent.putExtra("sign_out_message", "SignOut");
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

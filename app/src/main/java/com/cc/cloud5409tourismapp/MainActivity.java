@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
+
+import com.amazonaws.mobileconnectors.cognitoauth.Auth;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -31,13 +33,14 @@ public class MainActivity extends AppCompatActivity {
     private RequestQueue queue;
     public static final int TRIGGER_AUTO_SEARCH_COMPLETE = 100;
     public static final long AUTO_COMPLETE_DELAY = 300;
+    private Auth auth;
     private Handler handler;
     private AutoCompleteTextViewAdapter autoCompleteTextViewAdapter;
     private ImageButton cancel_button;
     ArrayList<HashMap<String,String>> searchPlacelist;
 
     // Search Microservice
-    String url = "http://192.168.0.60:5000/search/";
+    String url = "http://192.168.0.63:5000/search/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

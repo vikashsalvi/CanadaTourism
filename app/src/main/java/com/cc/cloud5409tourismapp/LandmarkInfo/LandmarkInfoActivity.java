@@ -1,15 +1,20 @@
 package com.cc.cloud5409tourismapp.LandmarkInfo;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.cognitoauth.Auth;
@@ -20,6 +25,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.cc.cloud5409tourismapp.MainActivity;
 import com.cc.cloud5409tourismapp.R;
 import com.cc.cloud5409tourismapp.RequestQueueApiSingleton;
@@ -38,10 +47,11 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     TextView name;
     TextView description;
     // Description Microservice
-    String url = "http://192.168.0.60:5050/description/";
+    String url = "http://192.168.0.63:5050/description/";
     // URL for Amazon S3 Bucket
     String s3bucketUrl = "https://cloud-5409-tourism-app-resources.s3.amazonaws.com/";
     private static final String TAG = "Cloud5409AuthCognito";
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,48 +69,61 @@ public class LandmarkInfoActivity extends AppCompatActivity {
             }
         });
 
-        Intent in = getIntent();
-        String message = in.getStringExtra("sign_out_message");
-        if(message != null) {
-            this.auth.signOut();
-        }
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final String place_id = getIntent().getStringExtra("place_id");
-                System.out.println(place_id);
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + place_id, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(final JSONObject response) {
-                        System.out.println("Successful Response: " + response);
-                        synchronized (this) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        System.out.println(url + place_id);
-                                        String place = response.get("name").toString() + "," + response.get("city").toString();
-                                        name.setText(place);
-                                        description.setText(response.get("description").toString());
-                                        String imageQuery = response.get("name").toString().split(" ")[0] + ".jpeg";
-                                        System.out.println(imageQuery);
-                                        Glide.with(getApplicationContext()).load(s3bucketUrl + imageQuery).into(location_image);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println("No Response from Description: "+ error);
-                    }
-                });
+                Intent intent = getIntent();
+                if(intent.getStringExtra("place_id") != null) {
+                    final String place_id = intent.getStringExtra("place_id");
+                    System.out.println(place_id);
+                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + place_id, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(final JSONObject response) {
+                            System.out.println("Successful Response: " + response);
+                            synchronized (this) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            System.out.println(url + place_id);
+                                            String place = response.get("name").toString() + "," + response.get("city").toString();
+                                            name.setText(place);
+                                            description.setText(response.get("description").toString());
+                                            String imageQuery =  place_id + ".jpeg";
+                                            progressBar = (ProgressBar)findViewById(R.id.progressBar);
+                                            progressBar.setVisibility(View.VISIBLE);
+                                            Glide.with(getApplicationContext())
+                                                    .load(s3bucketUrl + imageQuery)
+                                                    .listener(new RequestListener<Drawable>() {
+                                                        @Override
+                                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                                            return false;
+                                                        }
 
-                RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+                                                        @Override
+                                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                                            progressBar.setVisibility(View.GONE);
+                                                            return false;
+                                                        }
+                                                    })
+                                                    .into(location_image);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println("No Response from Description: "+ error);
+                        }
+                    });
+
+                    RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+                }
             }
         };
         Thread get_request = new Thread(null,runnable, "background");
@@ -111,10 +134,19 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent activityIntent = getIntent();
-        if (activityIntent.getData() != null &&
-                reDirectAWS.getHost().equals(activityIntent.getData().getHost())) {
-            auth.getTokens(activityIntent.getData());
+        Intent in = getIntent();
+        if(in.getStringExtra("sign_out_message") != null){
+            String message = in.getStringExtra("sign_out_message");
+            if(message != null) {
+                this.auth.signOut();
+            }
+        }
+        else {
+            Intent activityIntent = getIntent();
+            if (activityIntent.getData() != null &&
+                    reDirectAWS.getHost().equals(activityIntent.getData().getHost())) {
+                auth.getTokens(activityIntent.getData());
+            }
         }
     }
 
@@ -155,15 +187,13 @@ public class LandmarkInfoActivity extends AppCompatActivity {
 
         @Override
         public void onSignout() {
-            startActivity(getIntent());
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
         }
 
         @Override
         public void onFailure(Exception e) {
             Log.e(TAG, "Failed to auth", e);
-            Intent intent = getIntent();
-            finish();
-            startActivity(intent);
         }
     }
 

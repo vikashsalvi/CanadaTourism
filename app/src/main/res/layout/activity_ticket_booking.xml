@@ -6,17 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".TicketBooking.TicketBookingActivity">
 
-    <Button
-        android:id="@+id/sign_out"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="76dp"
-        android:width="300dp"
-        android:background="@drawable/button_background_1"
-        android:text="@string/sign_out"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+<!--    <Button-->
+<!--        android:id="@+id/sign_out"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="44dp"-->
+<!--        android:layout_marginBottom="76dp"-->
+<!--        android:width="300dp"-->
+<!--        android:background="@drawable/button_background_1"-->
+<!--        android:text="@string/sign_out"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
