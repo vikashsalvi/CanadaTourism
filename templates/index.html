@@ -2,6 +2,10 @@
 <html>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+
 <meta charset="UTF-8">
 <title>Search</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,6 +56,14 @@
 <ul id="myUL">
 </ul>
 
+<div class="container">
+  <br>
+  <div class="row" id="contentPanel">
+
+  </div>
+</div>
+
+
 <script>
 function fetchLocation() {
     removAllLi();
@@ -86,6 +98,61 @@ function removAllLi(){
 }
 </script>
 
-<input type="button" value="Proceed to book tickets"/>
+<script>
+var resp = $.ajax({
+                    url: 'http://127.0.0.1:8085/getLocation',
+                    data: {},
+                    dataType: 'json',
+                    type: 'GET',
+                    async: false,
+                    beforeSend: function (x) {
+                        if (x && x.overrideMimeType) {
+                            x.overrideMimeType("application/j-son;charset=UTF-8");
+                        }
+                    },
+                    success: function (response) {
+                    },
+                    error: function (error) {
+                    }
+                });
+    resp = resp.responseJSON;
+    var num=40;
+    for (var i=1;i<=num;i++) {
+
+      var place_name_name = "";
+      var city_name = "";
+      var whole_name = "";
+      for(var x = 1; x <=num ;x++){
+        if(resp[x-1].place_id == i-1){
+
+        place_name = resp[x-1].place;
+        city_name = resp[x-1].city;
+        whole_name = place_name +", "+city_name;
+
+        }
+      }
+      console.log(whole_name);
+
+        var myCol = $('<div class="col-sm-3 col-md-3 pb-2"></div>');
+        var img_url = "https://cloud-5409-tourism-app-resources.s3.amazonaws.com/"+i+".jpeg";
+        var myPanel = $('<br/><div class="card card-outline-info" id="'+i+'Panel"><div class="card-block"><img src='+img_url+' width ="254" height="200" class="square"><p></p><div class="card-title"><span><br/><h5>'+whole_name+'</h5></span><button type="button" class="close" data-target="#'+i+'Panel" data-dismiss="alert"><span class="float-right"><i class="fa fa-remove"></i></span></button></div></div></div>');
+        myPanel.appendTo(myCol);
+        myCol.appendTo('#contentPanel');
+    }
+    
+    
+    $('.close').on('click', function(e){
+      e.stopPropagation();  
+          var $target = $(this).parents('.col-sm-3');
+          $target.hide('slow', function(){ $target.remove(); });
+    });
+
+</script>
+
+
+
+<script>
+  
+</script>
 </body>
 </html>

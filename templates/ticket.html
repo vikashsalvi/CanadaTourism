@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>E-Ticket</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -15,9 +15,9 @@
 
   <style type="text/css">
   .card,h2 {
-        margin: 0 auto; /* Added */
-        float: none; /* Added */
-        margin-bottom: 10px; /* Added */
+        margin: 0 auto;
+        float: none; 
+        margin-bottom: 10px;
 }</style>
 </head>
 <body>
@@ -48,11 +48,20 @@
           <td id="num_tickets"><b></b></td>
         </tr>
 
+        <tr >
+          <td align="right">Booking Date:</td>
+          <td id="book_date"> <b></b></td>
+          <td align="right">Departure Date:</td>
+          <td id="dept_date"><b></b></td>
+        </tr>
+
         <tr>
-          <td colspan="4">Your ticket has been booked</td>
+          <td colspan="4">Thank You! Your ticket has been booked</td>
         </tr>
       </table>
-      <svg id="barcode" viewBox="0 0 10 10"></svg>
+      <svg id="barcode"  viewBox="0 0 10 10"></svg>
+<br/><br/>
+      <input type="button" id="but" value="Donwload pdf"/><br/><br/>
 
     </div>
   </div>
@@ -61,8 +70,6 @@
 </div>
 <div id="editor"></div>
 
-
-<input type="button" id="but" value="Donwload pdf"/><br/><br/>
 
 
 
@@ -86,6 +93,12 @@ function fillTicket(object){
   document.getElementById("name").innerHTML = object["name"];
   document.getElementById("name").style.fontSize = "25px";
   document.getElementById("name").style.fontWeight = "bold";
+
+  document.getElementById("book_date").innerHTML = object["book_date"];
+  document.getElementById("book_date").style.fontWeight = "bold";
+
+  document.getElementById("dept_date").innerHTML = object["dept_date"];
+  document.getElementById("dept_date").style.fontWeight = "bold";
 
   // text = JSON.parse(object);
   // console.log(text);
@@ -141,14 +154,13 @@ Cipher.toQWERTY = function(text, decode) {
     }
 
     return text.split('').filter(function(v) {
-        // Filter out characters that are not in our list
+
         if (special.includes(v))
             return v
         
         return map.hasOwnProperty(v);
     }).map(function(v) {
-        // Replace old character by new one
-        // And make it uppercase to make it look fancier
+    
         if (special.includes(v))
             return v
 
