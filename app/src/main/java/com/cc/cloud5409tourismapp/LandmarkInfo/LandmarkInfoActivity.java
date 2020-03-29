@@ -38,6 +38,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.HashMap;
+
 public class LandmarkInfoActivity extends AppCompatActivity {
 
     Button ticketBooking;
@@ -47,7 +49,11 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     TextView name;
     TextView description;
     // Description Microservice
-    String url = "http://192.168.0.63:5050/description/";
+    String url = "http://192.168.0.68:5050/description/";
+    String encrypt_url = "http://192.168.0.68:5005/encrypt";
+    String decrypt_url = "http://192.168.0.68:5005/decrypt";
+    public String encrypt_text;
+    public String decrypt_text;
     // URL for Amazon S3 Bucket
     String s3bucketUrl = "https://cloud-5409-tourism-app-resources.s3.amazonaws.com/";
     private static final String TAG = "Cloud5409AuthCognito";
@@ -76,53 +82,42 @@ public class LandmarkInfoActivity extends AppCompatActivity {
                 Intent intent = getIntent();
                 if(intent.getStringExtra("place_id") != null) {
                     final String place_id = intent.getStringExtra("place_id");
-                    System.out.println(place_id);
-                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + place_id, null, new Response.Listener<JSONObject>() {
+                    HashMap<String, String> params = new HashMap<String, String>();
+                    params.put("text", place_id);
+                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, encrypt_url, new JSONObject(params), new Response.Listener<JSONObject>() {
                         @Override
-                        public void onResponse(final JSONObject response) {
-                            System.out.println("Successful Response: " + response);
-                            synchronized (this) {
-                                runOnUiThread(new Runnable() {
+                        public void onResponse(JSONObject response) {
+                            try {
+                                encrypt_text = response.getString("output");
+                                HashMap<String, String> decryptParams = new HashMap<String, String>();
+                                decryptParams.put("text", encrypt_text);
+                                JsonObjectRequest jsonObjectRequest1 = new JsonObjectRequest(Request.Method.POST, decrypt_url, new JSONObject(decryptParams), new Response.Listener<JSONObject>() {
                                     @Override
-                                    public void run() {
+                                    public void onResponse(JSONObject response) {
                                         try {
-                                            System.out.println(url + place_id);
-                                            String place = response.get("name").toString() + "," + response.get("city").toString();
-                                            name.setText(place);
-                                            description.setText(response.get("description").toString());
-                                            String imageQuery =  place_id + ".jpeg";
-                                            progressBar = (ProgressBar)findViewById(R.id.progressBar);
-                                            progressBar.setVisibility(View.VISIBLE);
-                                            Glide.with(getApplicationContext())
-                                                    .load(s3bucketUrl + imageQuery)
-                                                    .listener(new RequestListener<Drawable>() {
-                                                        @Override
-                                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                                            return false;
-                                                        }
-
-                                                        @Override
-                                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                                            progressBar.setVisibility(View.GONE);
-                                                            return false;
-                                                        }
-                                                    })
-                                                    .into(location_image);
-                                        } catch (JSONException e) {
+                                            decrypt_text = response.getString("output");
+                                            fetchLandMarkInfo(decrypt_text);
+                                            loadImage(decrypt_text);
+                                        } catch (JSONException e){
                                             e.printStackTrace();
                                         }
                                     }
+                                }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                    }
                                 });
+                                RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest1);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            System.out.println("No Response from Description: "+ error);
                         }
                     });
-
-                    RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+                    RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
                 }
             }
         };
@@ -131,6 +126,63 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     }
 
 
+    private void fetchLandMarkInfo(final String query) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url + query, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(final JSONObject response) {
+                System.out.println("Successful Response: " + response);
+                synchronized (this) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                System.out.println(url + query);
+                                String[] state_string = response.get("city").toString().split(" ");
+                                if(state_string.length == 1){
+                                    String place = response.get("name").toString() + ", " + state_string[0].substring(0,1).toUpperCase() + state_string[0].substring(1);
+                                    name.setText(place);
+                                } else {
+                                    String place = response.get("name").toString() + ", " + state_string[0].substring(0,1).toUpperCase() + state_string[0].substring(1)
+                                            + " " + state_string[1].substring(0,1).toUpperCase() + state_string[1].substring(1);
+                                    name.setText(place);
+                                }
+                                description.setText(response.get("description").toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("No Response from Description: "+ error);
+            }
+        });
+
+        RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
+    }
+
+    private void loadImage(String query){
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+        Glide.with(getApplicationContext())
+                .load(s3bucketUrl + (query + ".jpeg"))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        progressBar.setVisibility(View.GONE);
+                        return false;
+                    }
+                })
+                .into(location_image);
+    }
     @Override
     protected void onResume() {
         super.onResume();
