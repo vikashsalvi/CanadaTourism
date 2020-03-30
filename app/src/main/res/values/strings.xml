@@ -1,10 +1,15 @@
 <resources>
     <string name="app_name">Cloud5409TourismApp</string>
-    <!-- AWS Cognito Configuration parameters  -->
+    <!-- AWS Cognito Configurat>ion parameters  -->
     <string name="cognito_web_domain">cloud-5409-tourism-app.auth.us-east-1.amazoncognito.com</string>
     <string name="cognito_client_id">3pbtvh14d1jl56lgm4pmlpk1ue</string>
     <string name="cognito_client_secret">4kjqpo02ubb41mmfgfotlp3hdfmu6icfec3ee0cu62nlhbfd9ve</string>
     <string name="app_redirect">myapp://www.loginactivity.com/landmarkinfoactivity</string>
+<!--    <string name="cognito_web_domain">https://csci5409-tourism.auth.us-east-1.amazoncognito.com</string>-->
+<!--    <string name="cognito_client_id">6f4kg60ivm73o8otaqpap92ja</string>-->
+<!--    <string name="cognito_client_secret">142ug6hdqspchlj95fdqpciuukm1i11brbco43sh6i7iea39i5m6</string>-->
+<!--    <string name="app_redirect">myapp://www.loginactivity.com/landmarkinfoactivity</string>-->
+
     <string name="proceed_to_booking">Proceed To Booking</string>
     <string name="sign_out">Sign out</string>
     <string name="main_app_name">Cloud 5409 Tourism Application</string>

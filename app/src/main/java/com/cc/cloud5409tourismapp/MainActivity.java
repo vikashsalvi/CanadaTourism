@@ -2,7 +2,9 @@ package com.cc.cloud5409tourismapp;
 
 import androidx.annotation.NonNull;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,14 +21,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 
 import com.amazonaws.mobileconnectors.cognitoauth.Auth;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.bumptech.glide.Glide;
 import com.cc.cloud5409tourismapp.Cards.Card;
 import com.cc.cloud5409tourismapp.Cards.CardAdapter;
 import com.cc.cloud5409tourismapp.LandmarkInfo.LandmarkInfoActivity;
@@ -53,20 +53,22 @@ public class MainActivity extends AppCompatActivity {
     public String decoded_text;
     ArrayList<HashMap<String,String>> searchPlacelist;
 
-
     RecyclerView mRecyclerView;
     List<Card> cardList;
     Card cardData;
 
     // Search Microservice
-    String url = "http://192.168.0.68:5000/search/";
-    String encrypt_url = "http://192.168.0.68:5005/encrypt";
-    String decrypt_url = "http://192.168.0.68:5005/decrypt";
+    String url = "http://192.168.0.71:5000/search/";
+    String encrypt_url = "http://192.168.0.71:5005/encrypt";
+    String decrypt_url = "http://192.168.0.71:5005/decrypt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         cancel_button = findViewById(R.id.cancel_button);
         cancel_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,38 +190,37 @@ public class MainActivity extends AppCompatActivity {
         });
         RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrayRequest);
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GridLayoutManager mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url + "ga", null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                cardList = new ArrayList<>();
+                try {
+                    for(int i=0; i< response.length();i++){
+                        String[] info = response.getString(i).split("--__--");
+                        String location = info[0];
+                        String id = info[1];
+                        cardData = new Card(location, id);
+                        cardList.add(cardData);
+                    }
+                    CardAdapter myAdapter = new CardAdapter(MainActivity.this, cardList);
+                    mRecyclerView.setAdapter(myAdapter);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.print(error);
+            }
+        });
+        RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrayRequest);
+    }
 
-
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        GridLayoutManager mGridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
-//        mRecyclerView = findViewById(R.id.recyclerview);
-//        mRecyclerView.setLayoutManager(mGridLayoutManager);
-//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url + "new", null, new Response.Listener<JSONArray>() {
-//            @Override
-//            public void onResponse(JSONArray response) {
-//                cardList = new ArrayList<>();
-//                try {
-//                    for(int i=0; i< response.length();i++){
-//                        String[] info = response.getString(i).split("--__--");
-//                        String location = info[0];
-//                        String id = info[1];
-//                        cardData = new Card(location, id);
-//                        cardList.add(cardData);
-//                    }
-//                    CardAdapter myAdapter = new CardAdapter(MainActivity.this, cardList);
-//                    mRecyclerView.setAdapter(myAdapter);
-//                } catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                System.out.print(error);
-//            }
-//        });
-//        RequestQueueApiSingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonArrayRequest);
-//    }
 }

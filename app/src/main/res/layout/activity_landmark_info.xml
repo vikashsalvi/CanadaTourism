@@ -22,7 +22,7 @@
 
     <ImageView
         android:id="@+id/place_image"
-        android:layout_width="220dp"
+        android:layout_width="250dp"
         android:layout_height="220dp"
         android:layout_marginTop="48dp"
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
@@ -36,16 +36,15 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        app:cardBackgroundColor="#EAE0E0"
+        android:layout_marginStart="4dp"
         android:elevation="12dp"
-        app:cardCornerRadius="12dp"
+        android:layout_marginTop="10dp"
         android:paddingBottom="5dp"
+        app:cardBackgroundColor="#EAE0E0"
+        app:cardCornerRadius="12dp"
         app:cardElevation="8dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:cardPreventCornerOverlap="false"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/place_image">
 
         <TextView
@@ -76,14 +75,14 @@
         android:id="@+id/proceed_booking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="40dp"
         android:width="300dp"
         android:background="@drawable/button_background_1"
         android:text="@string/proceed_to_booking"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/cardView" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <ProgressBar
         android:id="@+id/progressBar"
