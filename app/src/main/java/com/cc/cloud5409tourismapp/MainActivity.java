@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
     Card cardData;
 
     // Search Microservice
-    String url = "http://192.168.0.71:5000/search/";
-    String encrypt_url = "http://192.168.0.71:5005/encrypt";
-    String decrypt_url = "http://192.168.0.71:5005/decrypt";
+    String url = "http://192.168.0.72:5000/search/";
+    String encrypt_url = "http://192.168.0.72:5005/encrypt";
+    String decrypt_url = "http://192.168.0.72:5005/decrypt";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

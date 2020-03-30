@@ -19,4 +19,11 @@
     <string name="place_name">Niagara Falls</string>
     <string name="description_name">If there is one destination you’d find in every ‘best places to visit in Canada during summers’ list, it is the Niagara Falls. Built along the spellbinding waterfalls by the same name, this famous city is an ideal place to explore if you’re looking for a magical experience. It is indeed one of the most iconic and best places to visit in Canada. Have a great time enjoying the views and clicking pictures of the cascading falls. You’ll have an unparalleled sightseeing experience when you’ll visit Niagara Falls at night.</string>
     <string name="landmark_info">About Landmark</string>
+    <string-array name="numbers">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
 </resources>

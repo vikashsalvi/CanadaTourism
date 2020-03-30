@@ -49,9 +49,9 @@ public class LandmarkInfoActivity extends AppCompatActivity {
     TextView name;
     TextView description;
     // Description Microservice
-    String url = "http://192.168.0.71:5050/description/";
-    String encrypt_url = "http://192.168.0.71:5005/encrypt";
-    String decrypt_url = "http://192.168.0.71:5005/decrypt";
+    String url = "http://192.168.0.72:5050/description/";
+    String encrypt_url = "http://192.168.0.72:5005/encrypt";
+    String decrypt_url = "http://192.168.0.72:5005/decrypt";
     public String encrypt_text;
     public String decrypt_text;
     // URL for Amazon S3 Bucket
@@ -74,7 +74,6 @@ public class LandmarkInfoActivity extends AppCompatActivity {
                 auth.getSession();
             }
         });
-
 
         Runnable runnable = new Runnable() {
             @Override
