@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta charset="UTF-8">
+<title>Search</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+#location {
+  background-image: url('images/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li a {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+
+#myUL li a:hover:not(.header) {
+  background-color: #eee;
+}
+</style>
+</head>
+<body class="bg-light" data-gr-c-s-loaded="true">
+
+<!--div class="media form-group pt-3">
+  <input text="search" class="form-control input-lg media-body" id="searchBox">
+</div>        -->
+<main role="main" class="container">
+<div class="my-3 p-3 bg-white rounded box-shadow">
+<div class="media form-group pt-3">
+<input type="text" id="location" onkeyup="fetchLocation()" placeholder="Search for places" title="Type in a name">
+</div>
+<div class="media form-group pt-3">
+  <ul id="myUL">
+  </ul>
+</div>
+</main>
+
+<div class="container">
+  <br>
+  <div class="row" id="contentPanel">
+
+  </div>
+</div>
+
+
+<script>
+function fetchLocation() {
+    removAllLi();
+    var ul = document.getElementById("myUL");
+    var x = document.getElementById("location");
+    if(x.value!=''){
+      var d = Cipher.toQWERTY(x.value)
+      $.get("http://ec2-52-201-9-149.compute-1.amazonaws.com:5050/search/"+d).done(function (data) {
+        data = Cipher.toQWERTY(data,true)
+        var jsonData = JSON.parse(data);
+        var local_list = []
+        for (var i = 0; i < jsonData.length; i++)
+          {
+              var ele = jsonData[i];
+              local_list.push(ele);
+          }
+          for (var i = 0; i < local_list.length; i++){
+            var node = document.createElement("lI");                 // Create a <li> node
+            var anchorNode = document.createElement('a');         // Create a text node
+            var id = String(local_list[i]).split("--__--")[1];
+            var textNode = document.createTextNode(String(local_list[i]).split("--__--")[0]);
+            anchorNode.href = "description.html?id="+id
+            anchorNode.appendChild(textNode);
+            node.appendChild(anchorNode);       
+            ul.appendChild(node);     // Append <li> to <ul> with id="myList"
+          }
+      });
+      
+    }
+}
+function removAllLi(){
+  console.log("removed")
+  document.getElementById("myUL").innerHTML = "";
+}
+</script>
+
+<script>
+var resp = $.ajax({
+                    url: 'http://ec2-52-201-9-149.compute-1.amazonaws.com:8085/getLocation',
+                    data: {},
+                    dataType: 'json',
+                    type: 'GET',
+                    async: false,
+                    beforeSend: function (x) {
+                        if (x && x.overrideMimeType) {
+                            x.overrideMimeType("application/j-son;charset=UTF-8");
+                        }
+                    },
+                    success: function (response) {
+                    },
+                    error: function (error) {
+                    }
+                });
+    resp = resp.responseJSON;
+    var num=40;
+    for (var i=1;i<=num;i++) {
+
+      var place_name_name = "";
+      var city_name = "";
+      var whole_name = "";
+      for(var x = 1; x <=num ;x++){
+        if(resp[x-1].place_id == i-1){
+
+        place_name = resp[x-1].place;
+        city_name = resp[x-1].city;
+        whole_name = place_name +", "+city_name;
+
+        }
+      }
+      console.log(whole_name);
+
+        var myCol = $('<div class="col-sm-3 col-md-3 pb-2"></div>');
+        var img_url = "https://cloud-5409-tourism-app-resources.s3.amazonaws.com/"+i+".jpeg";
+        var myPanel = $('<br/><div class="card card-outline-info" id="'+i+'Panel"><div class="card-block"><a href="description.html?id='+(i-1)+'"><img src='+img_url+' width ="254" height="200" class="square"><p></p><div class="card-title"><span><br/><h5>'+whole_name+'</h5></span><button type="button" class="close" data-target="#'+i+'Panel" data-dismiss="alert"><span class="float-right"><i class="fa fa-remove"></i></span></button></div></div></div>');
+        myPanel.appendTo(myCol);
+        myCol.appendTo('#contentPanel');
+    }
+    
+    
+    $('.close').on('click', function(e){
+      e.stopPropagation();  
+          var $target = $(this).parents('.col-sm-3');
+          $target.hide('slow', function(){ $target.remove(); });
+    });
+
+</script>
+ 
+
+<script>
+  
+var Cipher = {};
+Cipher.toQWERTY = function(text, decode) {
+    // ABCDEF to QWERTY map
+    var special = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ ’";
+    var map = {
+
+        A: 'H', B: 'e', C: 'l',
+        D: 'o', E: 'W', F: 'r',
+        G: 'd', H: 'a', I: 'Z',
+        J: 'S', K: 't', L: 's',
+        M: '1', N: '9', O: 'A',
+        P: 'B', Q: 'C', R: 'D',
+        S: 'E', T: 'F', U: 'G',
+        V: 'I', W: 'J', X: 'K',
+        Y: 'L', Z: 'M',    
+
+        a: 'N', b: 'O', c: 'P',
+        d: 'Q', e: 'R', f: 'T',
+        g: 'U', h: 'V', i: 'X',
+        j: 'Y', k: 'b', l: 'c',
+        m: 'f', n: 'g', o: 'h',
+        p: 'i', q: 'j', r: 'k',
+        s: 'm', t: 'n', u: 'p',
+        v: 'q', w: 'u', x: 'v',
+        y: 'w', z: 'x',
+
+        0: 'y', 1: 'z', 2: '0',
+        3: '2', 4: '3', 5: '4',
+        6: '5', 7: '6', 8: '7',
+        9: '8'
+    };
+
+    // Flip the map
+    if(decode) {
+        map = (function() {
+            var tmp = {};
+            var k;
+
+            // Populate the tmp variable
+            for(k in map) {
+                if(!map.hasOwnProperty(k)) continue;
+                tmp[map[k]] = k;
+            }
+
+            return tmp;
+        })();
+    }
+
+    return text.split('').filter(function(v) {
+
+        if (special.includes(v))
+            return v
+        
+        return map.hasOwnProperty(v);
+    }).map(function(v) {
+    
+        if (special.includes(v))
+            return v
+
+        return map[v];
+    }).join('');
+};
+
+</script>
+</body>
+</html>

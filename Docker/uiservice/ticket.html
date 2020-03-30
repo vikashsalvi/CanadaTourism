@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>E-Ticket</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.js"></script>
+
+
+  <style type="text/css">
+  .card,h2 {
+        margin: 0 auto;
+        float: none; 
+        margin-bottom: 10px;
+}</style>
+</head>
+<body>
+
+<div class="container">
+  <h2 style="text-align: center;">E-Ticket</h2> <br/>
+  <div class="card" style="width:600px">
+    <img class="card-img-top" src="https://cloud-5409-tourism-app-resources.s3.amazonaws.com/" alt="Card image" style="width:100%" id="picture">
+    <div class="card-body">
+      <table cellpadding="10"  width="85%" >
+        <tr>
+          <td colspan="4" id="name"></td>
+        </tr>
+
+        <tr >
+          <td align="right">From:</td>
+          <td id="source"> <b></b></td>
+          <td align="right">To:</td>
+          <td id="destination"><b></b></td>
+        </tr>
+
+
+        <tr >
+          <td align="right">Amount:</td>
+          <td id="amount"> <b></b></td>
+          <td align="right">Total tickets:</td>
+          <td id="num_tickets"><b></b></td>
+        </tr>
+
+        <tr >
+          <td align="right">Booking Date:</td>
+          <td id="book_date"> <b></b></td>
+          <td align="right">Departure Date:</td>
+          <td id="dept_date"><b></b></td>
+        </tr>
+
+        <tr>
+          <td colspan="4">Thank You! Your ticket has been booked</td>
+        </tr>
+      </table>
+      <svg id="barcode"  viewBox="0 0 10 10"></svg>
+<br/><br/>
+      <input type="button" id="but" value="Donwload pdf" /><br/><br/>
+
+    </div>
+  </div>
+  <br>
+
+</div>
+<div id="editor"></div>
+
+
+
+<script>
+function downloadPdf(){
+  console.log('heelo')
+}
+
+</script>
+<script>
+
+function fillTicket(){
+  var url_string =  window.location.href
+  var url = new URL(url_string);
+  var dbId = url.searchParams.get("token");
+  var id = url.searchParams.get("id");
+  var imageSrc = document.getElementById("picture").src;
+  document.getElementById("picture").src  = imageSrc +id+ ".jpeg";
+  doc = {"Id":dbId}
+  var setting = {
+  "async": true,
+  "crossDomain": true,
+  "url": "http://ec2-52-201-9-149.compute-1.amazonaws.com:5052/getTicket",
+  //"url": "http://localhost:5052/getTicket",
+  "method": "POST",
+  "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache" 
+  },
+  "processData": false,
+  "data": JSON.stringify(doc)
+  }
+  $.ajax(setting).done(function (response) {
+    
+  var data = JSON.parse(response)
+     
+  document.getElementById("num_tickets").innerHTML = data["nseats"];
+  document.getElementById("num_tickets").style.fontWeight = "bold";
+
+  document.getElementById("amount").innerHTML = data["total"];
+  document.getElementById("amount").style.fontWeight = "bold";
+
+  document.getElementById("source").innerHTML = data["from"];
+  document.getElementById("source").style.fontWeight = "bold";
+
+  document.getElementById("destination").innerHTML = data["to"];
+  document.getElementById("destination").style.fontWeight = "bold";
+
+  document.getElementById("name").innerHTML = data["name"];
+  document.getElementById("name").style.fontSize = "25px";
+  document.getElementById("name").style.fontWeight = "bold";
+
+  document.getElementById("book_date").innerHTML = data["book_date"];
+  document.getElementById("book_date").style.fontWeight = "bold";
+
+  document.getElementById("dept_date").innerHTML = data["dep_date"];
+  document.getElementById("dept_date").style.fontWeight = "bold";
+  })
+
+  
+
+  // text = JSON.parse(object);
+  // console.log(text);
+}
+
+
+var Cipher = {};
+Cipher.toQWERTY = function(text, decode) {
+    // ABCDEF to QWERTY map
+    var special = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ ’";
+    var map = {
+
+        A: 'H', B: 'e', C: 'l',
+        D: 'o', E: 'W', F: 'r',
+        G: 'd', H: 'a', I: 'Z',
+        J: 'S', K: 't', L: 's',
+        M: '1', N: '9', O: 'A',
+        P: 'B', Q: 'C', R: 'D',
+        S: 'E', T: 'F', U: 'G',
+        V: 'I', W: 'J', X: 'K',
+        Y: 'L', Z: 'M',    
+
+        a: 'N', b: 'O', c: 'P',
+        d: 'Q', e: 'R', f: 'T',
+        g: 'U', h: 'V', i: 'X',
+        j: 'Y', k: 'b', l: 'c',
+        m: 'f', n: 'g', o: 'h',
+        p: 'i', q: 'j', r: 'k',
+        s: 'm', t: 'n', u: 'p',
+        v: 'q', w: 'u', x: 'v',
+        y: 'w', z: 'x',
+
+        0: 'y', 1: 'z', 2: '0',
+        3: '2', 4: '3', 5: '4',
+        6: '5', 7: '6', 8: '7',
+        9: '8'
+    };
+
+    // Flip the map
+    if(decode) {
+        map = (function() {
+            var tmp = {};
+            var k;
+
+            // Populate the tmp variable
+            for(k in map) {
+                if(!map.hasOwnProperty(k)) continue;
+                tmp[map[k]] = k;
+            }
+
+            return tmp;
+        })();
+    }
+
+    return text.split('').filter(function(v) {
+
+        if (special.includes(v))
+            return v
+        
+        return map.hasOwnProperty(v);
+    }).map(function(v) {
+    
+        if (special.includes(v))
+            return v
+
+        return map[v];
+    }).join('');
+};
+
+
+var data = "z";
+var resp = $.ajax({
+                    url: 'http://ec2-52-201-9-149.compute-1.amazonaws.com:8085/getDetails',
+                    data: {'id':data},
+                    dataType: 'json',
+                    type: 'GET',
+                    async: false,
+                    beforeSend: function (x) {
+                        if (x && x.overrideMimeType) {
+                            x.overrideMimeType("application/j-son;charset=UTF-8");
+                        }
+                    },
+                    success: function (response) {
+                    },
+                    error: function (error) {
+                    }
+                });  
+                console.log(resp.responseText);
+                r = Cipher.toQWERTY(resp.responseText, true); 
+                console.log(r);
+              fillTicket(r);
+</script>
+
+<script>
+  var doc = new jsPDF();
+  function onClick() {
+              html2canvas(document.body, {
+                onrendered: function(canvas) {
+
+                    var img = canvas.toDataURL("image/png");
+                    var doc = new jsPDF();
+                    doc.addImage(img, 'JPEG', 20, 20);
+                    doc.save('test.pdf');
+                }
+
+                });
+            };
+            var element = document.getElementById("but");
+            element.addEventListener("click", onClick);
+</script>
+
+</body>
+<script>
+function makeid(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+  var element = document.getElementById("barcode");
+  input = makeid(15);
+  JsBarcode(element, input);
+</script>
+</html>

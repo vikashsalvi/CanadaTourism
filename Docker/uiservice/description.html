@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+
+<meta charset="UTF-8">
+<title>Search</title>
+<style type = "text/css">
+
+.card,h2 {
+        margin: 0 auto; /* Added */
+        float: none; /* Added */
+        margin-bottom: 10px; /* Added */
+}
+* {
+  box-sizing: border-box;
+}
+
+#location {
+  background-image: url('images/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li a {
+  border: 1px solid #ddd;
+  margin-top: -1px; /* Prevent double borders */
+  background-color: #f6f6f6;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  display: block
+}
+
+#myUL li a:hover:not(.header) {
+  background-color: #eee;
+}
+
+</style>
+
+</head>
+
+
+
+
+<body onload="checkCookie()">
+<br/>
+  <div class="container">
+    <h2 style="text-align: center;">Description about the place</h2> <br/>
+  
+    <div class="card" style="width:650px;">
+      <img class="card-img-top" src="https://cloud-5409-tourism-app-resources.s3.amazonaws.com/" alt="Card image" style="width:100%" id="picture">
+      <div class="card-body">
+        <table cellpadding="10"  width="100%" >
+          <tr>
+            <td colspan="4" id="placecity"></td>
+          </tr>
+  
+          <tr >
+            <td id="desc" style="text-align: justify;"></td>
+          </tr>
+  
+  
+        </table><br/>
+        <input type="button" onclick="bookTciket()" value="Proceed to book tickets"/>
+
+  
+      </div>
+    </div>
+    <br>
+  
+  </div>
+
+
+
+
+
+
+
+
+
+
+    <ul id="myUL">
+    </ul>
+<input type="hidden" id="landmarkId" name="landmarkId" value="NA">
+</body>
+<script>
+  
+
+  function checkCookie() {
+
+  var locationId = getCookie("locationId");
+  if (locationId != "") {
+    console.log('cookie found')
+    vars = {}
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+    console.log(locationId)
+    delete_cookie("locationId")
+    document.getElementById("landmarkId").value = locationId;
+    getLocationDetails(locationId)
+  });
+  } else {
+    console.log("No cookie found")
+    vars = {}
+    flag = 0
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+    vars[key] = value;
+    if(vars["id"]==""){
+      window.location.href = "index.html"
+    }else{
+      flag=1
+      document.cookie = "locationId="+vars["id"];
+      getLocationDetails(vars["id"])
+    }
+    });
+    if(flag==0){
+      window.location.href = "index.html"
+    }
+  }
+}
+function delete_cookie( name ) {
+  document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  console.log("Cookie deleted")
+}
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+function getLocationDetails(locationId){
+console.log('setting picture')
+var imageSrc = document.getElementById("picture").src;
+document.getElementById("picture").src  = imageSrc +locationId+ ".jpeg";
+var vars = {};
+var ul = document.getElementById("myUL");
+
+$.get("http://ec2-52-201-9-149.compute-1.amazonaws.com:7080/description/"+Cipher.toQWERTY(locationId)).done(function (data) {
+    data = Cipher.toQWERTY(data,true)
+    var detailedData = JSON.parse(data)
+    var place_city = detailedData.place+", "+detailedData.city
+    document.getElementById("placecity").innerHTML = place_city;
+    document.getElementById("placecity").style.fontSize = "35px";
+    document.getElementById("placecity").style.fontWeight ="bold";
+
+    document.getElementById("desc").innerHTML = detailedData.description
+
+    // var node = document.createElement("lI");
+    // node.id = "location_name"
+    // var textNode = document.createTextNode(place_city);
+    // node.appendChild(textNode);
+    // ul.appendChild(node);
+
+
+    // var node = document.createElement("lI");
+    // var textNode = document.createTextNode(detailedData.description);
+    // node.appendChild(textNode);
+    // ul.appendChild(node);
+
+
+  });
+}
+
+function bookTciket(){
+  var vars = {};
+  var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+  vars[key] = value;
+  code = vars["code"]
+  if(code!=null){
+    window.location.href = "booking.html?code="+code+"&id="+document.getElementById("landmarkId").value
+  }else{
+  console.log("cookie added")
+  console.log("Redirecting to login page")
+  document.cookie = "locationId="+vars["id"];
+  window.location.href = "https://csci5409-tourism.auth.us-east-1.amazoncognito.com/login?client_id=6f4kg60ivm73o8otaqpap92ja&response_type=code"+
+  "&redirect_uri=https://flask-sample-script.herokuapp.com/sample";
+  }
+
+  });
+}
+
+</script>
+
+<script>
+  var Cipher = {};
+Cipher.toQWERTY = function(text, decode) {
+    // ABCDEF to QWERTY map
+    var special = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ ’";
+    var map = {
+
+        A: 'H', B: 'e', C: 'l',
+        D: 'o', E: 'W', F: 'r',
+        G: 'd', H: 'a', I: 'Z',
+        J: 'S', K: 't', L: 's',
+        M: '1', N: '9', O: 'A',
+        P: 'B', Q: 'C', R: 'D',
+        S: 'E', T: 'F', U: 'G',
+        V: 'I', W: 'J', X: 'K',
+        Y: 'L', Z: 'M',
+
+        a: 'N', b: 'O', c: 'P',
+        d: 'Q', e: 'R', f: 'T',
+        g: 'U', h: 'V', i: 'X',
+        j: 'Y', k: 'b', l: 'c',
+        m: 'f', n: 'g', o: 'h',
+        p: 'i', q: 'j', r: 'k',
+        s: 'm', t: 'n', u: 'p',
+        v: 'q', w: 'u', x: 'v',
+        y: 'w', z: 'x',
+
+        0: 'y', 1: 'z', 2: '0',
+        3: '2', 4: '3', 5: '4',
+        6: '5', 7: '6', 8: '7',
+        9: '8'
+    };
+
+    // Flip the map
+    if(decode) {
+        map = (function() {
+            var tmp = {};
+            var k;
+
+            // Populate the tmp variable
+            for(k in map) {
+                if(!map.hasOwnProperty(k)) continue;
+                tmp[map[k]] = k;
+            }
+
+            return tmp;
+        })();
+    }
+
+    return text.split('').filter(function(v) {
+        // Filter out characters that are not in our list
+        if (special.includes(v))
+            return v
+
+        return map.hasOwnProperty(v);
+    }).map(function(v) {
+        // Replace old character by new one
+        // And make it uppercase to make it look fancier
+        if (special.includes(v))
+            return v
+
+        return map[v];
+    }).join('');
+};
+
+</script>
+
+</html>
