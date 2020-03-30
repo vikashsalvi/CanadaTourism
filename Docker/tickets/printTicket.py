@@ -1,12 +1,12 @@
 import boto3
 from flask import Flask, request
 from flask_cors import CORS
-from cloud5409.CSCI5409Project import encryption as enc
+import encryption as enc
 
 import json
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/search/*": {"origins": "*"}})
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 dynamodb = boto3.resource('dynamodb', 'us-east-1')
 table = dynamodb.Table('details')
@@ -27,4 +27,5 @@ def search():
     return cip.encrypt(json.dumps(response["Item"]))
 
 
-app.run(debug=True, port=5010)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True, port=5010)

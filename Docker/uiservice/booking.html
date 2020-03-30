@@ -1,0 +1,373 @@
+<html>
+
+<head>
+    
+    <script>
+        var city
+        var city_id 
+        function getDetails(){
+            document.getElementById("alertMessage").style.display = "none"
+            var url_string =  window.location.href
+            var url = new URL(url_string);
+            var locationId = url.searchParams.get("id");
+            city_id = locationId
+            console.log(locationId);
+            
+            $.get("http://ec2-52-201-9-149.compute-1.amazonaws.com:7080/description/"+Cipher.toQWERTY(locationId)).done(function (data) {
+            data  = Cipher.toQWERTY(data,true)
+            var detailedData = JSON.parse(data)
+        
+            var place_city = detailedData.place+", "+detailedData.city
+            city = place_city
+            document.getElementById('destinationLabel').innerHTML = place_city
+        });
+        }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="css/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+        document.getElementById("alertBox").style.display = "none"
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+
+        .rounded-lg {
+            border-radius: 1rem;
+        }
+
+        .nav-pills .nav-link {
+            color: #555;
+        }
+
+        .nav-pills .nav-link.active {
+            color: #fff;
+        }
+    </style>
+    <script>
+        function checkInput(){
+            if (this.value.length > this.maxLength) {
+                this.value = this.value.slice(0, this.maxLength);
+            }else{
+                var result = this.value.replace(/^(.{4})(.{6})(.*)$/, "$1 $2 $3");
+            }
+        }
+    </script>
+    <script>
+        $(function(){
+            $(".dropdown-menu a").click(function(){
+                $(".btn:first-child").text($(this).text());
+                $(".btn:first-child").val($(this).text());
+                document.getElementById('totalPrice').innerHTML = "Total price: $"+''+parseInt($(this).text())*10
+                
+            });
+        });
+    </script>
+</head>
+
+<body onload=  "getDetails()">
+    <div class="container py-5">
+
+        <!-- For demo purpose -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4">Book your travel!!</h1>
+                <p class="lead mb-0">Please fill in the following to complete you booking</p>
+            </div>
+        </div>
+        <!-- End -->
+
+
+        <div class="row">
+            <div class="col-lg-7 mx-auto">
+                <div class="bg-white rounded-lg shadow-sm p-5">
+                    <!-- Credit card form tabs -->
+                    <!-- <ul role="tablist" class="nav bg-light nav-pills rounded-pill nav-fill mb-3">
+                        <li class="nav-item">
+                            <p class="lead mb-0 nav-link ">Enter you Credit/Debit card information</p>
+                            <!--<a data-toggle="pill" href="#nav-tab-card" class="nav-link active rounded-pill">
+                                          <i class="fa fa-credit-card"></i>
+                                          Credit Card
+                                      </a>-->
+                       <!-- </li>
+                    </ul> -->
+                    <!-- End -->
+
+
+                    <!-- Credit card form content -->
+                    <div class="tab-content">
+
+                        <!-- credit card info-->
+                        <div id="nav-tab-card" class="tab-pane fade show active">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="username">Full name (on the card)</label>
+                                    <input type="text" name="username" id="user_name" placeholder="Enter your name" required
+                                        class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Source</label>
+                                    <input type="text" name="soruceName" id="source" placeholder="Enter your source location" required
+                                        id="source" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Destination</label>
+                                    <label for="destination" class="form-control" id='destinationLabel'></label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label >Date of travel</label>
+                                    <input type="date" name="bday" max="3000-12-31" id="dateField"
+                                           min="2020-01-01" class="form-control">
+                                </div>
+                                  
+                                <div class="container lead mb-0 nav-link nav bg-light mb-3">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <br>
+                                            <p class="lead">Price for one ticket: $10</p>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <br>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-primary dropdown-toggle"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    1
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">1</a>
+                                                    <a class="dropdown-item" href="#">2</a>
+                                                    <a class="dropdown-item" href="#">3</a>
+                                                    <a class="dropdown-item" href="#">4</a>
+                                                    <a class="dropdown-item" href="#">5</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </div>
+                                    <div class="row">
+                                        <br>
+                                        <div class="col-sm-6">
+                                        <p id="totalPrice" class="lead">Total price: $10</p>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardNumber">Card number</label>
+                                    <div class="input-group">
+                                        
+                                        <input type="text"  maxlength="16" name="cardNumbers" placeholder="Your card number" 
+                                            id="cardNumbers" class="form-control" onkeypress="return checkDigit(event)" required>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text text-muted">
+                                                <i class="fa fa-cc-visa mx-1"></i>
+                                                <i class="fa fa-cc-amex mx-1"></i>
+                                                <i class="fa fa-cc-mastercard mx-1"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <p  id="alertMessage" class="alert alert-success"></p> 
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <div class="form-group">
+                                            <label><span class="hidden-xs">Expiration</span></label>
+                                            <div class="input-group">
+                                                <input type="number" maxlength="2" id="MM" placeholder="MM"  class="form-control"
+                                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" 
+                                                required>
+                                                <input type="number" maxlength="2" id="YY" placeholder="YY" class="form-control"
+                                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"    
+                                                required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group mb-4">
+                                            <label data-toggle="tooltip"
+                                                title="Three-digits code on the back of your card">CVV
+                                                <i class="fa fa-question-circle"></i>
+                                            </label>
+                                            <input type="text" required maxlength="3" id="cvv" class="form-control" onkeypress="return checkDigit(event)">
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                <button type="button" onclick="validateService()"
+                                    class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">
+                                    Confirm
+                                </button>
+                            </form>
+                        </div>
+                        <!-- End -->
+                    </div>
+                    <!-- End -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+
+    function checkDigit(event) {
+    var code = (event.which) ? event.which : event.keyCode;
+    
+    if ((code < 48 || code > 57) && (code > 31)) {
+        return false;
+    }
+    return true;
+    }
+
+    function validateService(){
+        var name = document.getElementById('user_name').value
+        var source = document.getElementById('source').value
+        var cardNumber = document.getElementById('cardNumbers').value
+        var dateField = document.getElementById('dateField').value
+        var mm = document.getElementById('MM').value
+        var yy = document.getElementById('YY').value
+        var cvv = document.getElementById('cvv').value
+        total_seats = ""
+        destination = ''
+        var price = document.getElementById('totalPrice').innerHTML.toString().substring(document.getElementById('totalPrice').innerHTML.toString().length-2,document.getElementById('totalPrice').innerHTML.toString().length)
+        var doc = {
+            "name":name,
+            "source":source,
+            "destination":city,
+            "cardNumber":cardNumber,
+            "mm":mm,
+            "cvv":cvv,
+            "yy":yy,
+            "dot":dateField,
+            "price":price
+        }
+
+        console.log(doc)
+        var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "http://ec2-52-201-9-149.compute-1.amazonaws.com:5052/validate",
+        //"url": "http://localhost:5052/validate",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "cache-control": "no-cache" 
+        },
+        "processData": false,
+        "data": JSON.stringify(doc)
+        }
+        $.ajax(settings).done(function (response) {
+        
+        if(response == '1'){
+            var setting2 = {
+            "async": true,
+            "crossDomain": true,
+            "url": "http://ec2-52-201-9-149.compute-1.amazonaws.com:5052/insertTicket",
+            //"url": "http://localhost:5052/insertTicket",
+            "method": "POST",
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache" 
+            },
+            "processData": false,
+            "data": JSON.stringify(doc)
+            }
+            $.ajax(setting2).done(function (response) {
+                console.log(response)
+                document.getElementById("alertMessage").style.display = "none"
+                console.log("in here")
+                window.location.href = "ticket.html?token="+response+"&id="+city_id
+            })
+        }else{
+            var ar = response.split(",")
+            document.getElementById('alertMessage').innerHTML = ""
+            for(var i =0;i< ar.length;i++){
+                document.getElementById('alertMessage').innerHTML += ar[i].substring(0,ar[i].length) +"<br>"
+            }
+
+            document.getElementById('alertMessage').innerHTML = document.getElementById('alertMessage').innerHTML.substring(0,document.getElementById('alertMessage').innerHTML.length-4)
+            document.getElementById("alertMessage").style.display = "block"
+            
+        }
+        });
+    }
+</script>
+
+<script>
+    
+var Cipher = {};
+Cipher.toQWERTY = function(text, decode) {
+    // ABCDEF to QWERTY map
+    var special = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~ ’";
+    var map = {
+
+        A: 'H', B: 'e', C: 'l',
+        D: 'o', E: 'W', F: 'r',
+        G: 'd', H: 'a', I: 'Z',
+        J: 'S', K: 't', L: 's',
+        M: '1', N: '9', O: 'A',
+        P: 'B', Q: 'C', R: 'D',
+        S: 'E', T: 'F', U: 'G',
+        V: 'I', W: 'J', X: 'K',
+        Y: 'L', Z: 'M',    
+
+        a: 'N', b: 'O', c: 'P',
+        d: 'Q', e: 'R', f: 'T',
+        g: 'U', h: 'V', i: 'X',
+        j: 'Y', k: 'b', l: 'c',
+        m: 'f', n: 'g', o: 'h',
+        p: 'i', q: 'j', r: 'k',
+        s: 'm', t: 'n', u: 'p',
+        v: 'q', w: 'u', x: 'v',
+        y: 'w', z: 'x',
+
+        0: 'y', 1: 'z', 2: '0',
+        3: '2', 4: '3', 5: '4',
+        6: '5', 7: '6', 8: '7',
+        9: '8'
+    };
+
+    // Flip the map
+    if(decode) {
+        map = (function() {
+            var tmp = {};
+            var k;
+
+            // Populate the tmp variable
+            for(k in map) {
+                if(!map.hasOwnProperty(k)) continue;
+                tmp[map[k]] = k;
+            }
+
+            return tmp;
+        })();
+    }
+
+    return text.split('').filter(function(v) {
+
+        if (special.includes(v))
+            return v
+        
+        return map.hasOwnProperty(v);
+    }).map(function(v) {
+    
+        if (special.includes(v))
+            return v
+
+        return map[v];
+    }).join('');
+};
+</script>
+
+</html>

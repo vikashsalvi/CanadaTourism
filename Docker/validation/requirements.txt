@@ -1,0 +1,4 @@
+Flask==1.1.1
+Flask-Cors==3.0.8
+boto3==1.12.21
+simplejson==3.17.0

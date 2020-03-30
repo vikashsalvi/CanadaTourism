@@ -1,16 +1,17 @@
 from flask import Flask
 from flask_cors import CORS
+import encryption as enc
 
-app = Flask(__name__)
-cors = CORS(app, resources={r"/search/*": {"origins": "*"}})
+app = Flask(__name__,static_folder='templates')
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 import json
-
-
+cip = enc.cloudCipher()
 
 @app.route('/search/<place>')
 def search(place):
-    fp = open("C:\\Users\\Hardik\\Desktop\\new_tourism.csv", "r")
+    place = cip.decrypt(place)
+    fp = open("static/new_tourism.csv", "r")
     lines = fp.readlines()
     name_list = []
     counter = 0
@@ -29,7 +30,7 @@ def search(place):
             search_list.append(i[int(0)] + ", " + i[1].title()+i[2])
             counter += 1
     final_json = json.dumps(search_list)
-    return final_json
+    return cip.encrypt(final_json)
 
 if __name__ == "__main__":
-    app.run(debug=True,port=5000)
+    app.run(host='0.0.0.0',debug=True,port=5050)

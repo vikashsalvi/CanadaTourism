@@ -1,0 +1,91 @@
+{
+    "AWSEBDockerrunVersion":"2",
+    "containerDefinitions": [
+        {
+            "essential": true,
+            "image": "vikashsalvi/search",
+            "name": "search",
+            "memory": 128,
+            "portMappings": [
+                {
+                    "containerPort": 5050,
+                    "hostPort": 5050
+                }
+            ]
+        },
+        {
+            "essential": true,
+            "name": "details",
+            "memory": 128,
+            "image": "vikashsalvi/details",
+            "portMappings": [
+                {
+                    "containerPort": 7080,
+                    "hostPort": 7080
+                }
+            ]
+        },
+        {
+            "essential": true,
+            "name": "uiservice",
+            "memory": 128,
+            "image": "vikashsalvi/uiservice",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80
+                }
+            ]
+        },
+        {
+            "essential": true,
+            "name": "encrypt",
+            "memory": 128,
+            "image": "vikashsalvi/encrypt",
+            "portMappings": [
+                {
+                    "containerPort": 5005,
+                    "hostPort": 5005
+                }
+            ]
+        },
+        {
+            "essential": true,
+            "name": "locations",
+            "memory": 128,
+            "image": "vikashsalvi/locations",
+            "portMappings": [
+                {
+                    "containerPort": 8085,
+                    "hostPort": 8085
+                }
+            ]
+        },
+        {
+            "essential": true,
+            "name": "ticket",
+            "memory": 128,
+            "image": "vikashsalvi/ticket",
+            "portMappings": [
+                {
+                    "containerPort": 5010,
+                    "hostPort": 5020
+                }
+            ]
+        },
+        {
+            "essential": true,
+            "name": "validation",
+            "memory": 128,
+            "image": "vikashsalvi/validation",
+            "portMappings": [
+                {
+                    "containerPort": 5052,
+                    "hostPort": 5052
+                }
+            ]
+        }
+    ],
+    "family": "",
+    "volumes": []
+}

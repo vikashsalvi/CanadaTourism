@@ -63,7 +63,7 @@
     <h2 style="text-align: center;">Description about the place</h2> <br/>
   
     <div class="card" style="width:650px;">
-      <img class="card-img-top" src="https://cloud-5409-tourism-app-resources.s3.amazonaws.com/2.jpeg" alt="Card image" style="width:100%" id="picture">
+      <img class="card-img-top" src="https://cloud-5409-tourism-app-resources.s3.amazonaws.com/" alt="Card image" style="width:100%" id="picture">
       <div class="card-body">
         <table cellpadding="10"  width="100%" >
           <tr>
@@ -99,6 +99,8 @@
 <input type="hidden" id="landmarkId" name="landmarkId" value="NA">
 </body>
 <script>
+  
+
   function checkCookie() {
 
   var locationId = getCookie("locationId");
@@ -119,14 +121,15 @@
     var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
     vars[key] = value;
     if(vars["id"]==""){
-      window.location.href = "http://samplepython-env.eba-xiprsbmx.us-east-1.elasticbeanstalk.com/templates/index.html"
+      window.location.href = "index.html"
     }else{
       flag=1
+      document.cookie = "locationId="+vars["id"];
       getLocationDetails(vars["id"])
     }
     });
     if(flag==0){
-      window.location.href = "http://samplepython-env.eba-xiprsbmx.us-east-1.elasticbeanstalk.com/templates/index.html"
+      window.location.href = "index.html"
     }
   }
 }
@@ -150,11 +153,13 @@ function getCookie(cname) {
   return "";
 }
 function getLocationDetails(locationId){
-
+console.log('setting picture')
+var imageSrc = document.getElementById("picture").src;
+document.getElementById("picture").src  = imageSrc +locationId+ ".jpeg";
 var vars = {};
 var ul = document.getElementById("myUL");
 
-$.get("http://localhost:8082/description/"+Cipher.toQWERTY(locationId)).done(function (data) {
+$.get("http://ec2-52-201-9-149.compute-1.amazonaws.com:7080/description/"+Cipher.toQWERTY(locationId)).done(function (data) {
     data = Cipher.toQWERTY(data,true)
     var detailedData = JSON.parse(data)
     var place_city = detailedData.place+", "+detailedData.city
@@ -186,13 +191,13 @@ function bookTciket(){
   vars[key] = value;
   code = vars["code"]
   if(code!=null){
-    window.location.href = "http://samplepython-env.eba-xiprsbmx.us-east-1.elasticbeanstalk.com/templates/booking.html?code="+code+"&id="+document.getElementById("landmarkId").value
+    window.location.href = "booking.html?code="+code+"&id="+document.getElementById("landmarkId").value
   }else{
-
+  console.log("cookie added")
   console.log("Redirecting to login page")
   document.cookie = "locationId="+vars["id"];
   window.location.href = "https://csci5409-tourism.auth.us-east-1.amazoncognito.com/login?client_id=6f4kg60ivm73o8otaqpap92ja&response_type=code"+
-  "&redirect_uri=http://samplepython-env.eba-xiprsbmx.us-east-1.elasticbeanstalk.com/templates/description.html";
+  "&redirect_uri=https://flask-sample-script.herokuapp.com/sample";
   }
 
   });

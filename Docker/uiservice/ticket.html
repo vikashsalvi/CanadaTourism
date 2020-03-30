@@ -24,9 +24,8 @@
 
 <div class="container">
   <h2 style="text-align: center;">E-Ticket</h2> <br/>
-
   <div class="card" style="width:600px">
-    <img class="card-img-top" src="niagra.jpg" alt="Card image" style="width:100%" id="picture">
+    <img class="card-img-top" src="https://cloud-5409-tourism-app-resources.s3.amazonaws.com/" alt="Card image" style="width:100%" id="picture">
     <div class="card-body">
       <table cellpadding="10"  width="85%" >
         <tr>
@@ -61,7 +60,7 @@
       </table>
       <svg id="barcode"  viewBox="0 0 10 10"></svg>
 <br/><br/>
-      <input type="button" id="but" value="Donwload pdf"/><br/><br/>
+      <input type="button" id="but" value="Donwload pdf" /><br/><br/>
 
     </div>
   </div>
@@ -72,33 +71,63 @@
 
 
 
+<script>
+function downloadPdf(){
+  console.log('heelo')
+}
 
+</script>
 <script>
 
-function fillTicket(object){
-
-  object = JSON.parse(object);
-  document.getElementById("num_tickets").innerHTML = object["tickets"];
+function fillTicket(){
+  var url_string =  window.location.href
+  var url = new URL(url_string);
+  var dbId = url.searchParams.get("token");
+  var id = url.searchParams.get("id");
+  var imageSrc = document.getElementById("picture").src;
+  document.getElementById("picture").src  = imageSrc +id+ ".jpeg";
+  doc = {"Id":dbId}
+  var setting = {
+  "async": true,
+  "crossDomain": true,
+  "url": "http://ec2-52-201-9-149.compute-1.amazonaws.com:5052/getTicket",
+  //"url": "http://localhost:5052/getTicket",
+  "method": "POST",
+  "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache" 
+  },
+  "processData": false,
+  "data": JSON.stringify(doc)
+  }
+  $.ajax(setting).done(function (response) {
+    
+  var data = JSON.parse(response)
+     
+  document.getElementById("num_tickets").innerHTML = data["nseats"];
   document.getElementById("num_tickets").style.fontWeight = "bold";
 
-  document.getElementById("amount").innerHTML = object["amount"];
+  document.getElementById("amount").innerHTML = data["total"];
   document.getElementById("amount").style.fontWeight = "bold";
 
-  document.getElementById("source").innerHTML = object["source"];
+  document.getElementById("source").innerHTML = data["from"];
   document.getElementById("source").style.fontWeight = "bold";
 
-  document.getElementById("destination").innerHTML = object["destination"];
+  document.getElementById("destination").innerHTML = data["to"];
   document.getElementById("destination").style.fontWeight = "bold";
 
-  document.getElementById("name").innerHTML = object["name"];
+  document.getElementById("name").innerHTML = data["name"];
   document.getElementById("name").style.fontSize = "25px";
   document.getElementById("name").style.fontWeight = "bold";
 
-  document.getElementById("book_date").innerHTML = object["book_date"];
+  document.getElementById("book_date").innerHTML = data["book_date"];
   document.getElementById("book_date").style.fontWeight = "bold";
 
-  document.getElementById("dept_date").innerHTML = object["dept_date"];
+  document.getElementById("dept_date").innerHTML = data["dep_date"];
   document.getElementById("dept_date").style.fontWeight = "bold";
+  })
+
+  
 
   // text = JSON.parse(object);
   // console.log(text);
@@ -171,7 +200,7 @@ Cipher.toQWERTY = function(text, decode) {
 
 var data = "z";
 var resp = $.ajax({
-                    url: 'http://127.0.0.1:5010/getDetails',
+                    url: 'http://ec2-52-201-9-149.compute-1.amazonaws.com:8085/getDetails',
                     data: {'id':data},
                     dataType: 'json',
                     type: 'GET',
@@ -195,7 +224,7 @@ var resp = $.ajax({
 <script>
   var doc = new jsPDF();
   function onClick() {
-                html2canvas(document.body, {
+              html2canvas(document.body, {
                 onrendered: function(canvas) {
 
                     var img = canvas.toDataURL("image/png");
