@@ -84,6 +84,18 @@
                     "hostPort": 5052
                 }
             ]
+        },
+        {
+            "essential": true,
+            "name": "generatepdf",
+            "memory": 128,
+            "image": "darpan3131/generatepdf",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80
+                }
+            ]
         }
     ],
     "family": "",
