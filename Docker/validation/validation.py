@@ -57,10 +57,10 @@ def validate():
 
 
 
-aws_access_key_id="ASIAUUVR4XJX3S7LUHB5"
-aws_secret_access_key="V/AFjhuONhRxzBdSmwQeS8seGvPgRgB5fFIG8jpT"
-aws_session_token="FwoGZXIvYXdzEAkaDMn+qgKZ1B+ElDQfSyK+AV18rU8mK65XqkGv7FFO3KZxjz7r+pHtvgb/dCajYK1BrOkpzSazm/+ghX2weMGt/lyzhRXtRayGCpZPcvgzrx/BpCD/VSTQo2SLByfJL37ftzJpFPaLNErT8q7G94KJn7dCRV2Kq3kM0e0QASNhuoJQjTYAfecymFqK83nx+2U5qnNzArELCKWz+TqKnlw2a4b7i0Z38HEyBDYKmJAerNnloZFUY3sG8lMeuYYRSlZEeo5D8eJSjO3wEGQYuEQowp6I9AUyLd0Z+z5O4Dy8Iubq/CbY2kpfHiFVdLZmYcIGMQ5bFD/I6+hitoYfmy8R84boDA=="
 
+aws_access_key_id=""
+aws_secret_access_key=""
+aws_session_token=""
 
 dynamodb = boto3.resource('dynamodb',region_name='us-east-1',
     aws_access_key_id=aws_access_key_id,
